@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital - Sabor Café</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- QRious para generación limpia y confiable de Códigos QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sabor: {
+                            dark: '#081c13',
+                            green: '#113827',
+                            lightgreen: '#194d36',
+                            gold: '#d4af37',
+                            goldLight: '#f3e5ab',
+                            goldDark: '#aa8c2c'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gold-gradient {
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa8c2c 100%);
+        }
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 60%, #c5a059 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-shadow {
+            box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.45), 0 8px 12px -6px rgba(0, 0, 0, 0.4);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-sabor-dark text-gray-100 font-sans min-h-screen flex flex-col selection:bg-sabor-gold selection:text-sabor-dark">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-sabor-green/95 backdrop-blur-md border-b border-sabor-gold/30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full gold-gradient flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-solid fa-mug-hot text-sabor-dark text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-lg sm:text-xl gold-text-gradient tracking-wide leading-none">SABOR CAFÉ</h1>
+                    <p class="text-[10px] sm:text-xs text-sabor-goldLight/80 tracking-widest uppercase mt-0.5">Menú Digital Oficial</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Botón Ver Código QR -->
+                <button onclick="toggleQRModal()" class="flex items-center space-x-1.5 bg-sabor-lightgreen hover:bg-sabor-gold/20 text-sabor-gold border border-sabor-gold/50 px-3 py-2 rounded-xl text-xs font-semibold transition shadow-sm">
+                    <i class="fa-solid fa-qrcode text-sm"></i>
+                    <span class="hidden sm:inline">Código QR</span>
+                    <span class="sm:hidden">QR</span>
+                </button>
+
+                <!-- Botón Abrir Carrito Lateral -->
+                <button onclick="toggleCartDrawer()" class="relative flex items-center space-x-1.5 gold-gradient text-sabor-dark px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-md hover:opacity-95">
+                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                    <span>Tu Pedido</span>
+                    <span id="cart-badge" class="bg-sabor-dark text-sabor-gold text-[10px] px-1.5 py-0.5 rounded-full font-extrabold border border-sabor-gold/50 hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="relative py-10 sm:py-12 px-4 bg-gradient-to-b from-sabor-green to-sabor-dark text-center border-b border-sabor-gold/20">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:18px_18px]"></div>
+        <div class="max-w-3xl mx-auto relative z-10">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1 mb-3 rounded-full text-xs font-bold gold-gradient text-sabor-dark tracking-wider uppercase shadow">
+                <span>🛵 Si hay delivery disponible</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-5xl font-bold mb-2 text-white">
+                Nuestro <span class="gold-text-gradient italic">Menú</span>
+            </h2>
+            <p class="text-gray-300 text-xs sm:text-sm max-w-xl mx-auto mb-5">
+                Selecciona tus platos favoritos y envía tu orden directamente a nuestro WhatsApp oficial: <strong class="text-sabor-gold font-mono">0424-7578186</strong>
+            </p>
+            
+            <!-- Barra de búsqueda rápida -->
+            <div class="relative max-w-md mx-auto">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-sabor-gold">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="search-input" oninput="filterMenu()" placeholder="Buscar pizza, hamburguesa, cóctel, café..." class="w-full pl-10 pr-4 py-3 bg-sabor-green/90 border border-sabor-gold/40 rounded-2xl text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:border-sabor-gold shadow-inner transition">
+            </div>
+        </div>
+    </section>
+
+    <!-- Navegación por Categorías (Tabs) -->
+    <nav class="sticky top-[61px] z-30 bg-sabor-dark/95 backdrop-blur-md py-3 px-4 border-b border-sabor-gold/20 shadow-md overflow-x-auto no-scrollbar">
+        <div class="max-w-5xl mx-auto flex space-x-2 sm:justify-center min-w-max">
+            <button onclick="switchCategory('all')" id="tab-all" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition gold-gradient text-sabor-dark shadow">
+                <i class="fa-solid fa-border-all mr-1.5"></i> Todo
+            </button>
+            <button onclick="switchCategory('pizza')" id="tab-pizza" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30">
+                <i class="fa-solid fa-pizza-slice mr-1.5 text-sabor-gold"></i> Pizzas
+            </button>
+            <button onclick="switchCategory('comidas')" id="tab-comidas" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30">
+                <i class="fa-solid fa-burger mr-1.5 text-sabor-gold"></i> Comidas
+            </button>
+            <button onclick="switchCategory('cocteles')" id="tab-cocteles" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30">
+                <i class="fa-solid fa-martini-glass-citrus mr-1.5 text-sabor-gold"></i> Cócteles
+            </button>
+            <button onclick="switchCategory('cafe')" id="tab-cafe" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30">
+                <i class="fa-solid fa-mug-hot mr-1.5 text-sabor-gold"></i> Café
+            </button>
+            <button onclick="switchCategory('postre')" id="tab-postre" class="category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30">
+                <i class="fa-solid fa-cake-candles mr-1.5 text-sabor-gold"></i> Postre
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal del Menú -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-8 w-full pb-28">
+        <div id="menu-container" class="space-y-8">
+            <!-- Las secciones se renderizan dinámicamente con JavaScript -->
+        </div>
+
+        <!-- Mensaje sin resultados -->
+        <div id="no-results" class="hidden text-center py-16">
+            <i class="fa-solid fa-mug-saucer text-5xl text-sabor-gold/40 mb-4"></i>
+            <h3 class="font-serif text-xl font-bold text-gray-300">No encontramos ese producto</h3>
+            <p class="text-sm text-gray-400 mt-1">Intenta buscar con otro nombre o explora todas las categorías.</p>
+        </div>
+    </main>
+
+    <!-- Botón Flotante Inferior de Carrito -->
+    <div id="floating-cart-bar" class="fixed bottom-4 left-4 right-4 z-30 max-w-xl mx-auto hidden">
+        <button onclick="toggleCartDrawer()" class="w-full gold-gradient text-sabor-dark px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between font-bold border-2 border-sabor-dark hover:opacity-95 transition">
+            <div class="flex items-center space-x-2.5">
+                <span id="floating-cart-count" class="bg-sabor-dark text-sabor-gold text-xs w-6 h-6 rounded-full flex items-center justify-center font-extrabold">0</span>
+                <span class="text-sm">Ver Pedido y Enviar a WhatsApp</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span id="floating-cart-total" class="text-base font-extrabold">0$</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </div>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-sabor-green border-t border-sabor-gold/30 py-8 px-4 mt-auto">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full gold-gradient flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-mug-hot text-sabor-dark text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif font-bold text-lg gold-text-gradient">SABOR CAFÉ</h3>
+                    <p class="text-xs text-gray-300">Pizzas • Comidas • Cócteles • Café • Postres</p>
+                </div>
+            </div>
+            <div class="text-xs text-gray-300 space-y-1">
+                <p><i class="fa-solid fa-motorcycle text-sabor-gold mr-1"></i> Si hay delivery disponible</p>
+                <p class="text-sabor-goldLight font-semibold">
+                    <i class="fa-brands fa-whatsapp text-emerald-400 mr-1"></i> WhatsApp Oficial de Pedidos: <span class="font-mono font-bold text-white">0424-7578186</span>
+                </p>
+            </div>
+            <div>
+                <a href="https://wa.me/584247578186?text=Hola%20Sabor%20Caf%C3%A9%2C%20quisiera%20hacer%20una%20consulta%20sobre%20el%20men%C3%BA." target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow transition">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Chat Directo</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DE CÓDIGO QR IMPRIMIBLE -->
+    <div id="qr-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-sabor-green border-2 border-sabor-gold rounded-3xl max-w-md w-full p-6 card-shadow text-center relative my-auto">
+            <button onclick="toggleQRModal()" class="absolute top-4 right-4 text-gray-300 hover:text-white bg-sabor-dark/60 w-8 h-8 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-full gold-gradient mx-auto flex items-center justify-center mb-3 shadow">
+                <i class="fa-solid fa-qrcode text-sabor-dark text-xl"></i>
+            </div>
+            <h3 class="font-serif text-2xl font-bold gold-text-gradient mb-1">Código QR del Menú</h3>
+            <p class="text-xs text-gray-300 mb-4">Escanea para abrir el menú digital y ordenar directo al WhatsApp oficial del local.</p>
+
+            <div class="bg-sabor-dark/70 border border-sabor-gold/30 rounded-2xl p-3.5 mb-4 text-left">
+                <label for="custom-qr-url" class="block text-[11px] font-bold text-sabor-gold mb-1">
+                    <i class="fa-solid fa-globe mr-1"></i> Enlace Web del Menú (Opcional)
+                </label>
+                <input type="url" id="custom-qr-url" oninput="updateQRCode()" placeholder="Dejar vacío para usar enlace actual o pegar URL pública" class="w-full px-3 py-2 bg-sabor-green border border-sabor-gold/40 rounded-xl text-xs text-white placeholder-gray-400 focus:outline-none focus:border-sabor-gold">
+            </div>
+
+            <div id="printable-qr-card" class="bg-gradient-to-b from-sabor-green to-sabor-dark border-2 border-sabor-gold rounded-2xl p-5 mb-5 shadow-lg">
+                <p class="font-serif font-bold text-xl gold-text-gradient tracking-wider">SABOR CAFÉ</p>
+                <p class="text-[10px] text-sabor-goldLight uppercase tracking-widest mb-3">Escanea y Ordena Aquí</p>
+                
+                <div class="bg-white p-3 rounded-2xl inline-block shadow-inner mb-3">
+                    <canvas id="qr-canvas" class="mx-auto block"></canvas>
+                </div>
+
+                <div class="text-xs text-gray-200 space-y-1">
+                    <p class="font-bold text-sabor-gold"><i class="fa-brands fa-whatsapp text-emerald-400 mr-1"></i> Pedidos WhatsApp: <span class="font-mono text-white">0424-7578186</span></p>
+                    <p class="text-[11px] text-gray-300">🛵 ¡Si hay delivery disponible!</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="copyMenuLink()" class="py-2.5 rounded-xl bg-sabor-dark border border-sabor-gold/50 text-sabor-gold font-bold text-xs uppercase tracking-wider hover:bg-sabor-gold/10 transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copiar Enlace</span>
+                </button>
+                <button onclick="printQRCard()" class="py-2.5 rounded-xl gold-gradient text-sabor-dark font-bold text-xs uppercase tracking-wider shadow hover:opacity-90 transition flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Imprimir QR</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL LATERAL (DRAWER) DE CARRITO Y PEDIDO WHATSAPP -->
+    <div id="cart-drawer-backdrop" onclick="toggleCartDrawer()" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden transition-opacity"></div>
+    <aside id="cart-drawer" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-sabor-green border-l-2 border-sabor-gold shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300">
+        <!-- Cabecera del Carrito -->
+        <div class="p-5 border-b border-sabor-gold/30 flex items-center justify-between bg-sabor-dark/60">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-full gold-gradient flex items-center justify-center text-sabor-dark shadow">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif text-xl font-bold gold-text-gradient leading-tight">Tu Pedido</h3>
+                    <p class="text-[11px] text-emerald-300 font-medium flex items-center">
+                        <i class="fa-brands fa-whatsapp mr-1"></i> Destino fijo: <span class="font-mono font-bold ml-1 text-white">0424-7578186</span>
+                    </p>
+                </div>
+            </div>
+            <button onclick="toggleCartDrawer()" class="text-gray-300 hover:text-white bg-sabor-dark/70 w-9 h-9 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Lista de items en el carrito -->
+        <div id="cart-items-container" class="flex-grow overflow-y-auto p-5 space-y-3 divide-y divide-sabor-gold/15">
+            <!-- Se llena dinámicamente con JS -->
+        </div>
+
+        <!-- Pie del Carrito: Total, Datos del Cliente y Envío -->
+        <div class="p-5 border-t border-sabor-gold/30 bg-sabor-dark/80 space-y-3.5">
+            <div class="flex justify-between items-center">
+                <div>
+                    <span class="text-gray-300 font-serif text-base font-bold">Total Estimado:</span>
+                    <p id="consult-note" class="text-[10px] text-sabor-goldLight hidden">* Incluye ítems con precio a consultar</p>
+                </div>
+                <span id="cart-total" class="gold-text-gradient text-2xl font-extrabold">0$</span>
+            </div>
+
+            <!-- Selector de Modalidad: Delivery o Retiro en Local -->
+            <div class="grid grid-cols-2 gap-2 bg-sabor-green/60 p-1.5 rounded-2xl border border-sabor-gold/25">
+                <button type="button" onclick="setOrderMode('Delivery')" id="mode-delivery" class="py-2 px-3 rounded-xl text-xs font-bold transition gold-gradient text-sabor-dark shadow flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-motorcycle"></i>
+                    <span>Delivery</span>
+                </button>
+                <button type="button" onclick="setOrderMode('Retiro en Local / Mesa')" id="mode-pickup" class="py-2 px-3 rounded-xl text-xs font-bold transition text-gray-300 hover:text-white flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Retiro / Mesa</span>
+                </button>
+            </div>
+
+            <div class="space-y-2">
+                <input type="text" id="customer-name" placeholder="Tu Nombre *" class="w-full px-3.5 py-2.5 bg-sabor-green border border-sabor-gold/35 rounded-xl text-xs text-gray-100 placeholder-gray-400 focus:outline-none focus:border-sabor-gold">
+                <textarea id="customer-address" placeholder="Dirección exacta para el delivery *" rows="2" class="w-full px-3.5 py-2.5 bg-sabor-green border border-sabor-gold/35 rounded-xl text-xs text-gray-100 placeholder-gray-400 focus:outline-none focus:border-sabor-gold resize-none"></textarea>
+                <input type="text" id="customer-notes" placeholder="Notas adicionales (ej. sin cebolla, bien cocida) - Opcional" class="w-full px-3.5 py-2 bg-sabor-green/70 border border-sabor-gold/25 rounded-xl text-xs text-gray-100 placeholder-gray-400 focus:outline-none focus:border-sabor-gold">
+            </div>
+
+            <button onclick="sendWhatsAppOrder()" class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg transition flex items-center justify-center space-x-2">
+                <i class="fa-brands fa-whatsapp text-xl"></i>
+                <span>Enviar Pedido al 0424-7578186</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- NOTIFICACIÓN FLOTANTE (Toast) -->
+    <div id="toast" class="fixed top-20 right-4 z-50 bg-sabor-green border-2 border-sabor-gold text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-2.5 text-xs font-semibold transform -translate-y-32 opacity-0 transition-all duration-300 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-sabor-gold text-base"></i>
+        <span id="toast-message">Producto agregado</span>
+    </div>
+
+    <!-- DATOS Y LÓGICA JAVASCRIPT -->
+    <script>
+        // =========================================================================
+        // NÚMERO OFICIAL FIJO E INALTERABLE DE SABOR CAFÉ: 0424-7578186
+        // =========================================================================
+        const OFFICIAL_WHATSAPP_NUMBER = "584247578186";
+        const OFFICIAL_DISPLAY_PHONE = "0424-7578186";
+
+        try {
+            localStorage.removeItem('sabor_cafe_whatsapp');
+        } catch (e) {}
+
+        // Base de datos completa del menú extraída exactamente de la carta
+        const menuData = {
+            pizza: {
+                title: "Pizzas",
+                subtitle: "Elige tamaño Mediana (M) o Familiar (F) y agrega Borde de Queso (+4$) si deseas",
+                icon: "fa-pizza-slice",
+                isPizza: true,
+                items: [
+                    { id: "pz-1", name: "Napolitana", description: "Salsa, Jamón y Queso", prices: { M: 11, F: 13 } },
+                    { id: "pz-2", name: "Stravaganzza", description: "Salsa, Queso, Jamón, Tocineta y Maíz", prices: { M: 13, F: 16 } },
+                    { id: "pz-3", name: "Cuatro queso", description: "Salsa, Pecorino, Mozzarella, Parmesano y Amarillo", prices: { M: 16, F: 21 } },
+                    { id: "pz-4", name: "Vegetariana", description: "Salsa, Queso, Tomate, Cebolla y Pimentón", prices: { M: 11, F: 16 } },
+                    { id: "pz-5", name: "Especial Food And Service", description: "Salsa, Jamón, Queso, Peperoni, Champiñones, Pimentón, Maíz, Aceitunas y Tocineta", prices: { M: 16, F: 21 } }
+                ]
+            },
+            comidas: {
+                title: "Comidas",
+                subtitle: "Hamburguesas, parrillas, ensaladas y raciones",
+                icon: "fa-burger",
+                items: [
+                    { name: "Hamburguesa the House", price: 7 },
+                    { name: "Hamburguesa carne al barril", price: 8 },
+                    { name: "Hamburguesa de pollo", price: 7 },
+                    { name: "Hamburguesa de chuleta", price: 10 },
+                    { name: "Hamburguesa chuleta y barril", price: 14 },
+                    { name: "Hamburguesa chuleta y pollo", price: 12 },
+                    { name: "Hamburguesa chuleta y croqueta", price: 12 },
+                    { name: "Parrilla mixta para Dos", price: 15 },
+                    { name: "Ensalada César", price: 7 },
+                    { name: "Nuggets de pollo + papas", price: 9 },
+                    { name: "Servicio de 8 tequeños", price: 6 },
+                    { name: "Alitas a la BBQ", price: 6 },
+                    { name: "BBQ Picante", description: "Alitas bañadas en salsa BBQ picante", price: 6 },
+                    { name: "BBQ Mostaza y Miel", description: "Alitas bañadas en salsa BBQ mostaza y miel", price: 6 },
+                    { name: "Servicio de 200gr papas", price: 3 },
+                    { name: "Club house", price: 9 }
+                ]
+            },
+            cocteles: {
+                title: "Cócteles",
+                subtitle: "Refrescantes combinaciones clásicas y tropicales",
+                icon: "fa-martini-glass-citrus",
+                items: [
+                    { name: "Margarita limón", price: 3 },
+                    { name: "Margarita de fresa", price: 3 },
+                    { name: "Piña colada", price: 4 },
+                    { name: "Daiquiri de Limón", price: 4 },
+                    { name: "Daiquiri de limón y coco", price: 4 },
+                    { name: "Daiquiri de fresa", price: 4 },
+                    { name: "Daiquiri de parchita", price: 4 },
+                    { name: "Mojito clásico", price: 4 },
+                    { name: "Mojito de fresa", price: 4 },
+                    { name: "Shot de Tequila x4", price: 4 },
+                    { name: "Caipiroska de parchita", price: 5 },
+                    { name: "Caipiroska de fresa", price: 5 },
+                    { name: "Paradise", price: 3 },
+                    { name: "Azul océano", price: 3 },
+                    { name: "Michelada", price: 3 },
+                    { name: "Cuba libre", price: 3 }
+                ]
+            },
+            cafe: {
+                title: "Café",
+                subtitle: "Variedades de cafetería (Precio a consultar en tienda/WhatsApp)",
+                icon: "fa-mug-hot",
+                items: [
+                    { name: "Café", price: null },
+                    { name: "Capuchino", price: null },
+                    { name: "Latte", price: null },
+                    { name: "Coffe Alicorado", price: null }
+                ]
+            },
+            postre: {
+                title: "Postre",
+                subtitle: "Dulces, tortas y merengadas (Precio a consultar en tienda/WhatsApp)",
+                icon: "fa-cake-candles",
+                items: [
+                    { id: "ps-malteada", name: "Malteada", description: "Elige tu sabor favorito: Oreo, Fresa o Chocolate", flavors: ["Oreo", "Fresa", "Chocolate"], price: null },
+                    { name: "Merengada de Toddy, cerelac y fresa", price: null },
+                    { name: "Torta triple chocolate", price: null },
+                    { name: "Torta tres leche", price: null },
+                    { name: "Ponques de vainilla", price: null }
+                ]
+            }
+        };
+
+        let currentCategory = 'all';
+        let cart = [];
+        let orderMode = 'Delivery';
+        let pizzaSelections = {};
+        let flavorSelections = { "ps-malteada": "Oreo" };
+
+        menuData.pizza.items.forEach(p => {
+            pizzaSelections[p.id] = { size: 'M', cheeseBorder: false };
+        });
+
+        // Cambiar tamaño de pizza (M o F)
+        function selectPizzaSize(pizzaId, size) {
+            pizzaSelections[pizzaId].size = size;
+            renderMenu(document.getElementById('search-input').value);
+        }
+
+        // Alternar extra de Borde de Queso (+4$) en pizza
+        function togglePizzaCheeseBorder(pizzaId) {
+            pizzaSelections[pizzaId].cheeseBorder = !pizzaSelections[pizzaId].cheeseBorder;
+            renderMenu(document.getElementById('search-input').value);
+        }
+
+        // Agregar pizza configurada al carrito
+        function addConfiguredPizza(pizzaId) {
+            const pizza = menuData.pizza.items.find(p => p.id === pizzaId);
+            if (!pizza) return;
+
+            const sel = pizzaSelections[pizzaId];
+            const basePrice = pizza.prices[sel.size];
+            const finalPrice = basePrice + (sel.cheeseBorder ? 4 : 0);
+            const sizeLabel = sel.size === 'M' ? 'Mediana (M)' : 'Familiar (F)';
+            const fullName = `${pizza.name} - ${sizeLabel}${sel.cheeseBorder ? ' + Borde de Queso' : ''}`;
+
+            addToCart(fullName, finalPrice);
+        }
+
+        // Cambiar sabor de un producto con variantes (ej. Malteada)
+        function selectItemFlavor(itemId, flavor) {
+            flavorSelections[itemId] = flavor;
+            renderMenu(document.getElementById('search-input').value);
+        }
+
+        // Agregar producto con sabor seleccionado al carrito
+        function addConfiguredFlavorItem(itemId, baseName, price) {
+            const chosenFlavor = flavorSelections[itemId] || "Oreo";
+            addToCart(`${baseName} (${chosenFlavor})`, price);
+        }
+
+        // Renderizar Menú completo o filtrado
+        function renderMenu(searchQuery = '') {
+            const container = document.getElementById('menu-container');
+            const noResults = document.getElementById('no-results');
+            container.innerHTML = '';
+
+            let hasResults = false;
+            const query = searchQuery.toLowerCase().trim();
+
+            Object.keys(menuData).forEach(catKey => {
+                if (currentCategory !== 'all' && currentCategory !== catKey) return;
+
+                const category = menuData[catKey];
+                const filteredItems = category.items.filter(item => {
+                    const matchName = item.name.toLowerCase().includes(query);
+                    const matchDesc = item.description ? item.description.toLowerCase().includes(query) : false;
+                    return matchName || matchDesc;
+                });
+
+                if (filteredItems.length > 0) {
+                    hasResults = true;
+                    const sectionEl = document.createElement('section');
+                    sectionEl.className = "bg-sabor-green/65 border border-sabor-gold/30 rounded-3xl p-5 sm:p-7 card-shadow transition-all";
+
+                    let itemsHtml = '';
+
+                    if (category.isPizza) {
+                        itemsHtml += `
+                            <div class="mb-4 px-3.5 py-2.5 rounded-2xl bg-sabor-dark/70 border border-sabor-gold/25 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                <span class="text-sabor-goldLight font-semibold"><i class="fa-solid fa-cheese text-sabor-gold mr-1.5"></i> Extra opcional disponible en todas las pizzas:</span>
+                                <span class="font-bold text-sabor-gold">Borde de queso +4$</span>
+                            </div>
+                        `;
+
+                        filteredItems.forEach(item => {
+                            const sel = pizzaSelections[item.id] || { size: 'M', cheeseBorder: false };
+                            const currentPrice = item.prices[sel.size] + (sel.cheeseBorder ? 4 : 0);
+
+                            itemsHtml += `
+                                <div class="py-4 border-b border-sabor-gold/15 last:border-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                    <div class="pr-2">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-2 h-2 rounded-full bg-sabor-gold shrink-0"></span>
+                                            <h4 class="font-serif font-bold text-lg text-white">${item.name}</h4>
+                                        </div>
+                                        <p class="text-xs text-gray-300 mt-1 pl-4 leading-relaxed">${item.description}</p>
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap items-center gap-2.5 pl-4 lg:pl-0 shrink-0">
+                                        <!-- Selector M / F -->
+                                        <div class="inline-flex bg-sabor-dark/90 p-1 rounded-xl border border-sabor-gold/30">
+                                            <button type="button" onclick="selectPizzaSize('${item.id}', 'M')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${sel.size === 'M' ? 'gold-gradient text-sabor-dark shadow' : 'text-gray-300 hover:text-white'}">
+                                                M (${item.prices.M}$)
+                                            </button>
+                                            <button type="button" onclick="selectPizzaSize('${item.id}', 'F')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${sel.size === 'F' ? 'gold-gradient text-sabor-dark shadow' : 'text-gray-300 hover:text-white'}">
+                                                F (${item.prices.F}$)
+                                            </button>
+                                        </div>
+
+                                        <!-- Botón Extra Borde de Queso -->
+                                        <button type="button" onclick="togglePizzaCheeseBorder('${item.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center space-x-1.5 ${sel.cheeseBorder ? 'bg-sabor-gold/25 border-sabor-gold text-sabor-goldLight' : 'bg-sabor-dark/60 border-sabor-gold/25 text-gray-300 hover:border-sabor-gold/60'}">
+                                            <i class="fa-solid ${sel.cheeseBorder ? 'fa-square-check text-sabor-gold' : 'fa-square text-gray-500'}"></i>
+                                            <span>Borde Queso +4$</span>
+                                        </button>
+
+                                        <!-- Botón Agregar -->
+                                        <button type="button" onclick="addConfiguredPizza('${item.id}')" class="gold-gradient text-sabor-dark hover:opacity-90 font-bold text-xs px-3.5 py-2 rounded-xl shadow flex items-center space-x-1.5 transition">
+                                            <span>Agregar ${currentPrice}$</span>
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        filteredItems.forEach(item => {
+                            const hasPrice = item.price !== null && item.price !== undefined;
+                            const priceDisplay = hasPrice ? `${item.price}$` : 'Consultar';
+                            const priceBadgeClass = hasPrice 
+                                ? 'font-bold text-sabor-gold text-base' 
+                                : 'text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-sabor-dark/70 text-sabor-goldLight border border-sabor-gold/30';
+
+                            if (item.flavors && Array.isArray(item.flavors)) {
+                                const selectedFlavor = flavorSelections[item.id] || item.flavors[0];
+                                const flavorButtons = item.flavors.map(fl => `
+                                    <button type="button" onclick="selectItemFlavor('${item.id}', '${fl}')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${selectedFlavor === fl ? 'gold-gradient text-sabor-dark shadow' : 'text-gray-300 hover:text-white'}">
+                                        ${fl}
+                                    </button>
+                                `).join('');
+
+                                itemsHtml += `
+                                    <div class="py-4 border-b border-sabor-gold/15 last:border-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sabor-gold shrink-0"></span>
+                                                <h4 class="font-serif font-bold text-base text-white">${item.name}</h4>
+                                            </div>
+                                            ${item.description ? `<p class="text-xs text-gray-300 mt-0.5 pl-3.5">${item.description}</p>` : ''}
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-2.5 pl-3.5 sm:pl-0 shrink-0">
+                                            <div class="inline-flex bg-sabor-dark/90 p-1 rounded-xl border border-sabor-gold/30">
+                                                ${flavorButtons}
+                                            </div>
+                                            <span class="${priceBadgeClass}">${priceDisplay}</span>
+                                            <button type="button" onclick="addConfiguredFlavorItem('${item.id}', '${item.name.replace(/'/g, "\\'")}', ${hasPrice ? item.price : 'null'})" class="bg-sabor-dark/90 hover:bg-sabor-gold hover:text-sabor-dark border border-sabor-gold/50 text-sabor-gold w-8 h-8 rounded-xl flex items-center justify-center transition shadow-sm" title="Agregar al pedido">
+                                                <i class="fa-solid fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                itemsHtml += `
+                                    <div class="flex items-center justify-between py-3.5 border-b border-sabor-gold/15 last:border-0 gap-3">
+                                        <div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sabor-gold shrink-0"></span>
+                                                <h4 class="font-serif font-bold text-base text-white">${item.name}</h4>
+                                            </div>
+                                            ${item.description ? `<p class="text-xs text-gray-300 mt-0.5 pl-3.5">${item.description}</p>` : ''}
+                                        </div>
+                                        <div class="flex items-center space-x-3 shrink-0">
+                                            <span class="${priceBadgeClass}">${priceDisplay}</span>
+                                            <button onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${hasPrice ? item.price : 'null'})" class="bg-sabor-dark/90 hover:bg-sabor-gold hover:text-sabor-dark border border-sabor-gold/50 text-sabor-gold w-8 h-8 rounded-xl flex items-center justify-center transition shadow-sm" title="Agregar al pedido">
+                                                <i class="fa-solid fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+
+                    sectionEl.innerHTML = `
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b-2 border-sabor-gold/40">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-sabor-dark shadow shrink-0">
+                                    <i class="fa-solid ${category.icon} text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-serif text-2xl font-bold gold-text-gradient leading-none">${category.title}</h3>
+                                    <p class="text-[11px] text-gray-300 mt-1">${category.subtitle}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            ${itemsHtml}
+                        </div>
+                    `;
+
+                    container.appendChild(sectionEl);
+                }
+            });
+
+            if (hasResults) {
+                noResults.classList.add('hidden');
+            } else {
+                noResults.classList.remove('hidden');
+            }
+        }
+
+        // Cambiar categoría activa
+        function switchCategory(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.className = "category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-sabor-green text-gray-300 hover:text-white border border-sabor-gold/30";
+            });
+
+            const activeTab = document.getElementById(`tab-${category}`);
+            if (activeTab) {
+                activeTab.className = "category-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition gold-gradient text-sabor-dark shadow";
+            }
+
+            const searchInput = document.getElementById('search-input');
+            renderMenu(searchInput.value);
+        }
+
+        // Filtrar con buscador
+        function filterMenu() {
+            const query = document.getElementById('search-input').value;
+            renderMenu(query);
+        }
+
+        // Cambiar modalidad de entrega
+        function setOrderMode(mode) {
+            orderMode = mode;
+            const btnDelivery = document.getElementById('mode-delivery');
+            const btnPickup = document.getElementById('mode-pickup');
+            const addressInput = document.getElementById('customer-address');
+
+            if (mode === 'Delivery') {
+                btnDelivery.className = "py-2 px-3 rounded-xl text-xs font-bold transition gold-gradient text-sabor-dark shadow flex items-center justify-center space-x-1.5";
+                btnPickup.className = "py-2 px-3 rounded-xl text-xs font-bold transition text-gray-300 hover:text-white flex items-center justify-center space-x-1.5";
+                addressInput.placeholder = "Dirección exacta para el delivery *";
+            } else {
+                btnPickup.className = "py-2 px-3 rounded-xl text-xs font-bold transition gold-gradient text-sabor-dark shadow flex items-center justify-center space-x-1.5";
+                btnDelivery.className = "py-2 px-3 rounded-xl text-xs font-bold transition text-gray-300 hover:text-white flex items-center justify-center space-x-1.5";
+                addressInput.placeholder = "Número de mesa o nombre para retirar en el local *";
+            }
+        }
+
+        // Añadir producto al carrito
+        function addToCart(name, price) {
+            const existingItem = cart.find(i => i.name === name && i.price === price);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`Agregado: ${name}`);
+        }
+
+        // Actualizar interfaz del carrito y barra flotante
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const floatingBar = document.getElementById('floating-cart-bar');
+            const floatingCount = document.getElementById('floating-cart-count');
+            const floatingTotal = document.getElementById('floating-cart-total');
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total');
+            const consultNote = document.getElementById('consult-note');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + ((item.price || 0) * item.quantity), 0);
+            const hasConsultItems = cart.some(item => item.price === null);
+
+            if (totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.classList.remove('hidden');
+                floatingBar.classList.remove('hidden');
+                floatingCount.innerText = totalItems;
+                floatingTotal.innerText = hasConsultItems ? `${totalPrice}$ + Consultar` : `${totalPrice}$`;
+            } else {
+                badge.classList.add('hidden');
+                floatingBar.classList.add('hidden');
+            }
+
+            if (hasConsultItems) {
+                consultNote.classList.remove('hidden');
+            } else {
+                consultNote.classList.add('hidden');
+            }
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-3 text-sabor-gold/30"></i>
+                        <p class="text-sm font-medium text-gray-300">Tu carrito está vacío</p>
+                        <p class="text-xs text-gray-400 mt-1">Agrega pizzas, comidas, cócteles o cafés del menú.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '';
+                cart.forEach((item, index) => {
+                    const isConsult = item.price === null;
+                    const unitLabel = isConsult ? 'Precio a consultar' : `${item.price}$ c/u`;
+                    const subtotalLabel = isConsult ? 'Consultar' : `${item.price * item.quantity}$`;
+
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between py-3 gap-2">
+                            <div class="pr-2">
+                                <h4 class="font-serif font-bold text-sm text-white leading-snug">${item.name}</h4>
+                                <p class="text-xs text-sabor-gold mt-0.5">${unitLabel}</p>
+                            </div>
+                            <div class="flex items-center space-x-2 shrink-0">
+                                <div class="flex items-center space-x-2 bg-sabor-dark px-2.5 py-1 rounded-xl border border-sabor-gold/35">
+                                    <button onclick="changeQuantity(${index}, -1)" class="text-gray-300 hover:text-white"><i class="fa-solid fa-minus text-xs"></i></button>
+                                    <span class="text-xs font-bold text-white w-4 text-center">${item.quantity}</span>
+                                    <button onclick="changeQuantity(${index}, 1)" class="text-gray-300 hover:text-white"><i class="fa-solid fa-plus text-xs"></i></button>
+                                </div>
+                                <span class="text-xs font-bold text-sabor-gold w-14 text-right">${subtotalLabel}</span>
+                                <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 p-1" title="Eliminar"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            totalEl.innerText = hasConsultItems ? `${totalPrice}$ + Consultar` : `${totalPrice}$`;
+        }
+
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            const backdrop = document.getElementById('cart-drawer-backdrop');
+            const isClosed = drawer.classList.contains('translate-x-full');
+
+            if (isClosed) {
+                backdrop.classList.remove('hidden');
+                drawer.classList.remove('translate-x-full');
+                updateCartUI();
+            } else {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        function toggleQRModal() {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                updateQRCode();
+            }
+        }
+
+        function updateQRCode() {
+            const customUrlInput = document.getElementById('custom-qr-url');
+            const customUrl = customUrlInput ? customUrlInput.value.trim() : '';
+            const targetUrl = customUrl || window.location.href;
+            const canvas = document.getElementById('qr-canvas');
+
+            if (canvas && typeof QRious !== 'undefined') {
+                new QRious({
+                    element: canvas,
+                    value: targetUrl,
+                    size: 180,
+                    background: '#ffffff',
+                    foreground: '#081c13',
+                    level: 'H'
+                });
+            }
+        }
+
+        function copyMenuLink() {
+            const customUrl = document.getElementById('custom-qr-url').value.trim();
+            const targetUrl = customUrl || window.location.href;
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = targetUrl;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast('¡Enlace del menú copiado!');
+        }
+
+        function printQRCard() {
+            const canvas = document.getElementById('qr-canvas');
+            const qrDataUrl = canvas.toDataURL('image/png');
+            const printWindow = window.open('', '', 'height=650,width=480');
+            printWindow.document.write('<html><head><title>QR Menú Digital - Sabor Café</title>');
+            printWindow.document.write('<style>body{font-family:sans-serif;text-align:center;background:#081c13;color:#fff;padding:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90vh;} .card{border:3px solid #d4af37;border-radius:24px;padding:30px;background:#113827;max-width:340px;} h1{color:#f3e5ab;margin:0 0 6px;font-size:28px;} .sub{color:#d4af37;letter-spacing:2px;font-size:11px;text-transform:uppercase;margin-bottom:20px;} img{background:#fff;padding:14px;border-radius:18px;width:200px;height:200px;} .phone{margin-top:18px;font-size:15px;font-weight:bold;color:#f3e5ab;} .deliv{font-size:13px;color:#d1d5db;margin-top:6px;}</style>');
+            printWindow.document.write('</head><body><div class="card">');
+            printWindow.document.write('<h1>SABOR CAFÉ</h1>');
+            printWindow.document.write('<div class="sub">Escanea y Ordena Aquí</div>');
+            printWindow.document.write(`<img src="${qrDataUrl}" alt="QR Sabor Café" />`);
+            printWindow.document.write(`<div class="phone">WhatsApp Pedidos: ${OFFICIAL_DISPLAY_PHONE}</div>`);
+            printWindow.document.write('<div class="deliv">🛵 ¡Si hay delivery disponible!</div>');
+            printWindow.document.write('</div></body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 350);
+        }
+
+        function sendWhatsAppOrder() {
+            if (cart.length === 0) {
+                showToast('¡Agrega al menos un producto al pedido!');
+                return;
+            }
+
+            const name = document.getElementById('customer-name').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const notes = document.getElementById('customer-notes').value.trim();
+
+            if (!name) {
+                showToast('Por favor escribe tu nombre');
+                document.getElementById('customer-name').focus();
+                return;
+            }
+
+            if (!address) {
+                showToast(orderMode === 'Delivery' ? 'Por favor escribe tu dirección de entrega' : 'Por favor indica tu mesa o retiro');
+                document.getElementById('customer-address').focus();
+                return;
+            }
+
+            let message = `*¡Hola Sabor Café! ☕ Quisiera realizar el siguiente pedido:*\n\n`;
+            message += `👤 *Cliente:* ${name}\n`;
+            message += `🛵 *Modalidad:* ${orderMode}\n`;
+            message += `📍 *Ubicación / Mesa:* ${address}\n`;
+            if (notes) {
+                message += `📝 *Notas:* ${notes}\n`;
+            }
+            message += `\n📋 *Detalle del Pedido:*\n`;
+
+            cart.forEach(item => {
+                if (item.price === null) {
+                    message += `• ${item.quantity}x ${item.name} _(Precio a consultar)_\n`;
+                } else {
+                    message += `• ${item.quantity}x ${item.name} (${item.price}$ c/u) = *${item.price * item.quantity}$*\n`;
+                }
+            });
+
+            const totalPrice = cart.reduce((sum, item) => sum + ((item.price || 0) * item.quantity), 0);
+            const hasConsultItems = cart.some(item => item.price === null);
+
+            if (hasConsultItems) {
+                message += `\n💰 *Total estimado:* *${totalPrice}$* _(+ ítems por consultar)_`;
+            } else {
+                message += `\n💰 *Total a pagar:* *${totalPrice}$*`;
+            }
+
+            const encodedText = encodeURIComponent(message);
+            const primaryWaUrl = `https://wa.me/${OFFICIAL_WHATSAPP_NUMBER}?text=${encodedText}`;
+            const fallbackWaUrl = `https://api.whatsapp.com/send?phone=${OFFICIAL_WHATSAPP_NUMBER}&text=${encodedText}`;
+
+            const win = window.open(primaryWaUrl, '_blank');
+            if (!win || win.closed || typeof win.closed === 'undefined') {
+                window.location.href = fallbackWaUrl;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('-translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-32', 'opacity-0');
+            }, 2600);
+        }
+
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMenu();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>
